@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EmojiLang</title>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+</head>
+<body>
+
+Emoji: <span id="out"></span>
+<br>
+<br>
+<div id="ide" style="height:200px;width:400px;"></div>
+
+<script>
+    const emojiLang = new Blockly.Generator('EmojiLang');
+
+    emojiLang['print'] = function (block) {
+        const code = block.getFieldValue('EMOJI_CODE');
+        if (!code) return 'waiting…';
+        if (code == ':-)') return '🙂';
+        if (code == ':-(') return '🙁';
+        if (code == ':-/') return '😕';
+        return '(unknown)';
+    };
+
+    Blockly.defineBlocksWithJsonArray([
+        {
+            type: 'print',
+            message0: 'print %1',
+            args0: [
+                { type: 'field_input', name: 'EMOJI_CODE' }
+            ]
+        }
+    ]);
+
+    const ws = Blockly.inject('ide', {
+        toolbox: {
+            kind: 'flyoutToolbox',
+            contents: [
+                { kind: 'block', type: 'print' }
+            ]
+        }
+    });
+
+    ws.addChangeListener(function () {
+        document.getElementById('out').innerHTML =
+            emojiLang.workspaceToCode(ws);
+    });
+</script>
+
+</body>
+</html>
