@@ -18,9 +18,9 @@ Emoji: <span id="out"></span>
     emojiLang['print'] = function (block) {
         const code = block.getFieldValue('EMOJI_CODE');
         if (!code) return 'waiting…';
-        if (code == ':-)') return '🙂';
-        if (code == ':-(') return '🙁';
-        if (code == ':-/') return '😕';
+        if (code === ':-)') return '🙂';
+        if (code === ':-(') return '🙁';
+        if (code === ':-/') return '😕';
         return '(unknown)';
     };
 
