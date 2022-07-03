@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QATool</title>
+    <script src="scripts/blockly.min.js"></script>
+</head>
+<body>
+
+<div id="out" style="width: 600px; height: 50px;"></div>
+<div id="ide" style="width: 800px; height: 600px;"></div>
+<!--Blockly.JavaScript.ORDER_NONE-->
+
+<script>
+    Blockly.common.defineBlocksWithJsonArray([
+        {
+            type: 'object',
+            message0: '{%1%2}',
+            args0: [
+                { type: 'input_dummy' },
+                { type: 'input_statement', name: 'MEMBERS' }
+            ],
+            output: null,
+            colour: 'green'
+        },
+        {
+            type: 'member',
+            message0: '%1:%2',
+            args0: [
+                { type: 'field_input', name: 'MEMBER_NAME', text: '' },
+                { type: 'input_value', name: 'MEMBER_VALUE' }
+            ],
+            previousStatement: null,
+            // nextStatement: null,
+            colour: 'black'
+        }
+    ]);
+
+    const workspace = Blockly.inject( 'ide', {
+       toolbox: {
+           kind: 'flyoutToolbox',
+           contents: [
+               { kind: 'block', type: 'object' },
+               { kind: 'block', type: 'member' },
+               { kind: 'block', type: 'math_number' },
+               { kind: 'block', type: 'text' },
+               { kind: 'block', type: 'logic_null' },
+               { kind: 'block', type: 'logic_boolean' },
+               { kind: 'block', type: 'lists_create_with' },
+           ]
+       }
+    });
+
+    const g = new Blockly.Generator('QATool');
+
+    workspace.addChangeListener( function () {
+        document.getElementById('out').innerHTML =
+            g.workspaceToCode( workspace );
+    });
+
+    g['math_number'] = (b) => [String(b.getFieldValue('NUM')), Blockly.JavaScript.ORDER_NONE ];
+    g['text'] = (b) => [`"${b.getFieldValue('TEXT')}"`, Blockly.JavaScript.ORDER_NONE];
+    g['logic_boolean'] = (b) => [b.getFieldValue('BOOL')==='TRUE'?'true':'false', Blockly.JavaScript.ORDER_NONE];
+    g['logic_null'] = (b) => ['null', Blockly.JavaScript.ORDER_NONE];
+    g['member'] = (b) => `"${b.getFieldValue('MEMBER_NAME')}": ${g.valueToCode( b, 'MEMBER_VALUE', Blockly.JavaScript.ORDER_NONE)}`;
+    g['object'] = (b) => [`{${g.statementToCode(b, 'MEMBERS')}}`, Blockly.JavaScript.ORDER_NONE];
+    g['lists_create_with'] = (b) =>
+    {
+        const values = [];
+        for ( let i = 0; i < b.itemCount_; i++ )
+        {
+            const valueCode = g.valueToCode( b, `ADD${i}`, Blockly.JavaScript.ORDER_NONE );
+            if ( valueCode )
+                values.push( valueCode );
+        }
+        const valueString = values.join(',');
+        const indentValueString = g.prefixLines( valueString, g.INDENT );
+        const codeValue = `[${indentValueString}]`;
+        return [codeValue, Blockly.JavaScript.ORDER_NONE];
+    }
+</script>
+</body>
+</html>
