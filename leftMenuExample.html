@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learn</title>
+    <script src="scripts/blockly.min.js"></script>
+<!--    <script src="https://unpkg.com/blockly/blockly.min.js"></script>-->
+    <style>
+        .myLabelStyle>.blocklyFlyoutLabelText {
+            font-style: italic;
+            fill: green;
+        }
+    </style>
+</head>
+<body>
+
+<div id="ide" style="width: 800px; height: 600px;"></div>
+
+<script>
+    const toolbox = {
+        "kind": "categoryToolbox",
+        "contents": [
+            {
+                "kind": "category",
+                "name": "Variables",
+                "custom": "VARIABLE",
+                hidden: 'false',
+                colour: "210"
+            },
+            {
+                "kind": "category",
+                "name": "Functions",
+                "custom": "PROCEDURE",
+                colour: "110"
+            },
+            {
+                "kind": "category",
+                "name": "Colours",
+                "custom": "COLOUR_PALETTE",
+            },
+            {
+                kind: 'category',
+                name: 'Dynamic Init',
+                custom: 'DYNAMIC_INIT'
+            },
+            {
+                kind: "category",
+                name: "My Math",
+                contents: [
+                    {
+                        "kind": "block",
+                        "type": "math_number",
+                        "fields": {
+                            "NUM": 42
+                        }
+                    },
+                    {
+                        "kind": "block",
+                        "type": "math_single",
+                        "disabled": "true"
+                    },
+                    {
+                        "kind": "block",
+                        "type":"logic_operation"
+                    },
+                    {
+                        "kind": "label",
+                        "text": "A label",
+                        "web-class": "myLabelStyle"
+                    },
+                    {
+                        "kind": "button",
+                        "text": "A button",
+                        "callbackKey": "yourCallbackKey"
+                    },
+                ]
+            },
+            {
+                "kind": "category",
+                "name": "Core",
+                "contents": [
+                    {
+                        "kind": "block",
+                        "type": "controls_if"
+                    },
+                    {
+                        "kind": "block",
+                        "type": "logic_compare"
+                    },
+                ]
+            },
+            {
+                "kind": "category",
+                "name": "Custom",
+                "expanded": true,
+                "contents": [
+                    {
+                        "kind": "block",
+                        // "type": "start"
+                        "type": "logic_null"
+                    },
+                    {
+                        "kind": "category",
+                        "name": "Move",
+                        "contents": [
+                            {
+                                "kind": "block",
+                                // "type": "move_forward"
+                                "type": "text"
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "category",
+                        "name": "Turn",
+                        "contents": [
+                            {
+                                "kind": "block",
+                                // "type": "turn_left"
+                                "type": "math_number"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    const workspace = Blockly.inject('ide', {toolbox: toolbox});
+
+    const coloursFlyoutCallback = function(workspace) {
+        const getPalette = () => ['#4286f4', '#ef0447'];
+        // Returns an array of hex colours, e.g. ['#4286f4', '#ef0447']
+        let colourList = getPalette();
+        let blockList = [];
+        for (let i = 0; i < colourList.length; i++) {
+            blockList.push({
+                'kind': 'block',
+                'type': 'colour_picker',
+                'fields': {
+                    'COLOUR': colourList[i]
+                }
+            });
+        }
+
+        blockList.push({
+            'kind': 'block',
+            'type': 'colour_picker',
+        });
+
+        return blockList;
+    };
+    workspace.registerButtonCallback('yourCallbackKey', () => console.log('I was pressed'));
+
+    // Associates the function with the string 'COLOUR_PALETTE'
+    workspace.registerToolboxCategoryCallback(
+        'COLOUR_PALETTE', coloursFlyoutCallback);
+
+
+    const myDynamicInitCallback = ( workspace ) =>
+    {
+        return [
+            { kind: 'block', type: 'text' }
+        ]
+    }
+    workspace.registerToolboxCategoryCallback( 'DYNAMIC_INIT', myDynamicInitCallback );
+
+    var xmlText = '<xml xmlns="https://developers.google.com/blockly/xml">' +
+        '<block type="math_number"></block></xml>';
+    Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xmlText), workspace);
+</script>
+<button onclick="console.log(Blockly.serialization.workspaces.save(Blockly.mainWorkspace))">
+    Save Workspace
+</button>
+<script>
+    const newToolbox = {
+        "kind": "categoryToolbox",
+        "contents": [
+            {
+                "kind": "category",
+                "name": "Variables",
+                "custom": "VARIABLE",
+                hidden: 'false',
+                colour: "210"
+            }
+        ]
+    }
+</script>
+<button
+        onclick="workspace.updateToolbox(newToolbox);">
+    New Toolbox
+</button>
+</body>
+</html>

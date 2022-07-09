@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Desmos</title>
+  <script src="scripts/blockly.min.js"></script>
+  <script src="scripts/calculator.js"></script>
+  <!--    <script src="https://unpkg.com/blockly/blockly.min.js"></script>-->
+  <!--    <script src="https://www.desmos.com/api/v1.7/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>-->
+
+</head>
+<body>
+
+<div id="out"></div>
+<div id="ide" style="width: 600px; height: 400px;"></div>
+<div id="calculator" style="width: 600px; height: 400px;"></div>
+
+<script>
+  const elt = document.getElementById('calculator');
+  const calculator = Desmos.GraphingCalculator(elt);
+</script>
+
+<script>
+
+  Blockly.defineBlocksWithJsonArray([
+    {
+      "type": "graph_get_x",
+      "message0": "x",
+      "output": "Number",
+      "colour": Blockly.Msg['VARIABLES_HUE'],
+      "tooltip": Blockly.Msg['VARIABLES_GET_TOOLTIP'],
+      "helpUrl": Blockly.Msg['VARIABLES_GET_HELPURL']
+    },
+    {
+      "type": "graph_set_y",
+      "message0": "y = %1",
+      "args0": [
+        {
+          "type": "input_value",
+          "name": "VALUE",
+          "check": "Number"
+        }
+      ],
+      output: 'Number',
+      "colour": Blockly.Msg['VARIABLES_HUE'],
+      "tooltip": Blockly.Msg['VARIABLES_SET_TOOLTIP'],
+      "helpUrl": Blockly.Msg['VARIABLES_SET_HELPURL']
+    },
+    {
+      type: 'member',
+      message0: 'y = %1',
+      args0: [
+        { type: 'input_value', name: 'VALUE' }
+      ]
+    }
+  ]);
+
+
+  const toolbox = { toolbox: {
+      kind: 'flyoutToolbox',
+      contents: [
+        { kind: 'block', type: 'math_number', fields: { NUM: 1 } },
+        { kind: 'block', type: 'graph_set_y' },
+        { kind: 'block', type: 'graph_get_x' },
+        { kind: 'block', type: 'math_arithmetic' },
+        { kind: 'block', type: 'member' },
+      ]
+    }};
+  const workspace = Blockly.inject('ide', toolbox );
+
+  const generator = new Blockly.Generator('MYDESMOS');
+  workspace.addChangeListener( () => {
+    const latex = generator.workspaceToCode(workspace);
+    document.getElementById('out').innerHTML = latex;
+    calculator.setExpression({ id: 'graph1', latex: latex });
+  });
+
+
+  generator['graph_set_y'] = function(block) {
+    // y variable setter.
+    const argument0 = generator.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) || '';
+    return `y = ${argument0}`;
+  };
+
+  generator['graph_get_x'] = function(block) {
+    // x variable getter.
+    return [`x`, Blockly.JavaScript.ORDER_NONE];
+  };
+
+  generator['member'] = ( b ) => `y = ${generator.valueToCode(b,'VALUE', Blockly.JavaScript.ORDER_NONE)}`;
+
+  generator['math_arithmetic'] = (block) =>
+  {
+    const OP = block.getFieldValue('OP');
+    let operation;
+    switch ( OP )
+    {
+      case 'ADD': operation = '+'; break;
+      case 'MINUS': operation = '-'; break;
+      case 'MULTIPLY': operation = '*'; break;
+      case 'DIVIDE': operation = '/'; break;
+      case 'POWER': operation = '^'; break;
+    }
+
+    const a = generator.valueToCode(block, 'A', Blockly.JavaScript.ORDER_ATOMIC) || '';
+    const b = generator.valueToCode(block, 'B', Blockly.JavaScript.ORDER_ATOMIC) || '';
+
+    return [`${a.replaceAll('(','').replaceAll(')','')}${operation}${b.replaceAll('(','').replaceAll(')','')}`, Blockly.JavaScript.ORDER_NONE];
+  }
+
+  generator['math_number'] = (b) => [`${b.getFieldValue('NUM')}`, Blockly.JavaScript.ORDER_NONE];
+
+</script>
+
+<script>
+  function saveWorkspace()
+  {
+    const jsonWorkspace = Blockly.serialization.workspaces.save(workspace);
+    localStorage.setItem("workspace", JSON.stringify(jsonWorkspace));
+  }
+  function restoreFromWorkspace()
+  {
+    const workspaceJSon = localStorage.getItem("workspace");
+    Blockly.serialization.workspaces.load(JSON.parse(workspaceJSon), workspace);
+  }
+</script>
+<button onclick="saveWorkspace();">Save Workspace</button>
+<button onclick="restoreFromWorkspace();">Restore Workspace</button>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learn</title>
+    <script src="scripts/blockly.min.js"></script>
+<!--    <script src="https://unpkg.com/blockly/blockly.min.js"></script>-->
+</head>
+<body>
+<textarea id="out"></textarea>
+<div id="ide" style="width: 800px; height: 600px;"></div>
+<script>
+
+    const toolbox = { toolbox: {
+        kind: 'flyoutToolbox',
+        contents: [
+            { kind: 'block', type: 'math_number', fields: { NUM: 555 } },
+        ]
+    }};
+    const workspace = Blockly.inject('ide', toolbox );
+</script>
+<button
+        onclick="
+            const jsonWorkspace = Blockly.serialization.workspaces.save(workspace);
+            document.getElementById('out').innerHTML = JSON.stringify(jsonWorkspace, null, 2);
+        ">
+    Save Workspace
+</button>
+<script>
+    const savedWorkspaceJSON = {
+        "blocks": {
+        "languageVersion": 0,
+            "blocks": [
+            {
+                "type": "math_number",
+                "id": "yy:PgkH}M0-G]$%[EqD_",
+                "x": 121,
+                "y": 97,
+                "fields": {
+                    "NUM": 777
+                }
+            }
+        ]
+    }};
+</script>
+<button onclick="Blockly.serialization.workspaces.load(savedWorkspaceJSON, workspace);">
+<!--<button onclick="Blockly.serialization.blocks.append(savedWorkspaceJSON);">-->
+    Restore Workspace
+</button>
+</body>
+</html>
