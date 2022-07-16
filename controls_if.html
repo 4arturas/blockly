@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IF</title>
+    <script src="scripts/blockly.min.js"></script>
+</head>
+<body>
+<div id="out"></div>
+<div id="ide" style="width: 600px; height: 400px;"></div>
+<script>
+
+    const workspace = Blockly.inject( 'ide', {
+        toolbox: {
+            kind: 'flyoutToolbox',
+            contents: [
+                { kind: 'block', type: 'controls_if' },
+            ]
+        }
+    });
+
+    const generator = new Blockly.Generator('GRAPH');
+    workspace.addChangeListener( () => {
+        const code = generator.workspaceToCode( workspace );
+        document.getElementById('out').innerHTML = code;
+    });
+
+    generator['controls_if'] = ( block ) => {
+        let n = 0;
+        let code = '', branchCode, conditionCode;
+        do {
+            conditionCode =
+                generator.valueToCode(block, 'IF' + n, Blockly.JavaScript.ORDER_NONE) || 'false';
+            branchCode =
+                generator.statementToCode(block, 'DO' + n);
+            code +=
+                (n > 0 ? ' else ' : '') +
+                `if (${conditionCode}) {\n${branchCode}}`;
+            ++n;
+        } while (block.getInput('IF' + n));
+
+        if (block.getInput('ELSE')) {
+            branchCode = generator.statementToCode(block, 'ELSE');
+            // code += ' else {\n' + branchCode + '}';
+            code += ` else {\n${branchCode}}`;
+        }
+        return code + '\n'
+    }
+
+</script>
+
+</body>
+</html>
