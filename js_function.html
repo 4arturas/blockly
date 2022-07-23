@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learn</title>
+    <script src="scripts/blockly.min.js"></script>
+    <script src="scripts/calculator.js"></script>
+<!--    <script src="https://unpkg.com/blockly/blockly.min.js"></script>-->
+<!--    <script src="https://www.desmos.com/api/v1.7/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>-->
+
+</head>
+<body>
+
+<div id="out"></div>
+<div id="ide" style="width: 600px; height: 400px;"></div>
+<div id="calculator" style="width: 600px; height: 400px;"></div>
+
+<script>
+    const elt = document.getElementById('calculator');
+    // const calculator = Desmos.GraphingCalculator(elt);
+</script>
+
+<script>
+    Blockly.Blocks['js_function_expression'] = {
+        /**
+         * Block for redering a function expression.
+         * @this Blockly.Block
+         */
+        init: function() {
+            this.setColour(290);
+            this.appendDummyInput()
+                .appendField("function");
+            this.appendValueInput('NAME');
+            this.appendValueInput('PARAM0')
+                .appendField("(");
+            this.appendDummyInput('END')
+                .appendField(")");
+            this.appendStatementInput('STACK');
+            this.setInputsInline(true);
+
+            this.setTooltip('Function expression.');
+
+
+            this.setOutput(true);
+
+        }
+    };
+
+    Blockly.common.defineBlocksWithJsonArray([
+        {
+            "type": "js_function",
+            "message0": "function %1 %2 (%3) %4 %5",
+            "args0": [
+                {
+                    "type": "input_value",
+                    "name": "FN_NAME"
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "input_value",
+                    "name": "PARAM"
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "input_statement",
+                    "name": "FN_BODY"
+                }
+            ],
+            "output": null,
+            "colour": 20,
+            "tooltip": "",
+            "helpUrl": ""
+        }
+    ]);
+
+    const workspace = Blockly.inject( 'ide', {
+        toolbox: {
+            kind: 'flyoutToolbox',
+            contents: [
+                { kind: 'block', type: 'js_function_expression' },
+                { kind: 'block', type: 'math_number' },
+                { kind: 'block', type: 'text' },
+                { kind: 'block', type: 'js_function' },
+            ]
+        }
+    });
+
+    const generator = new Blockly.Generator('IF');
+    workspace.addChangeListener( () => {
+        const code = generator.workspaceToCode( workspace );
+        document.getElementById('out').innerHTML = code;
+    })
+
+    generator['math_number'] = (b) => [String(b.getFieldValue('NUM')), Blockly.JavaScript.ORDER_NONE ];
+    generator['text'] = (b) => [`"${b.getFieldValue('TEXT')}"`, Blockly.JavaScript.ORDER_NONE];
+    generator['js_function'] = ( block ) =>
+    {
+        const branch = Blockly.JavaScript.statementToCode(block, 'FN_BODY');
+        const name = Blockly.JavaScript.valueToCode(block, 'FN_NAME', Blockly.JavaScript.ORDER_ATOMIC);
+        const args = [];
+        for (let i = 0; i < block.paramCount; i++) {
+            args[i] = Blockly.JavaScript.valueToCode(block, 'PARAM' + i, Blockly.JavaScript.ORDER_ATOMIC);
+        }
+        const code = 'yak.' + name + '=' + 'function ' +  '(' + args.join(', ') + ') {\n' + branch + '}';
+        if (block.outputConnection) {
+            return [code, Blockly.JavaScript.ORDER_ATOMIC];
+        } else {
+            return code + ';\n';
+        }
+    }
+</script>
+<button onclick="saveWorkspace();">Save Workspace</button>
+<button onclick="restoreFromWorkspace();">Restore Workspace</button>
+</body>
+</html>
