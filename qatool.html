@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learn</title>
+    <script src="scripts/blockly.min.js"></script>
+    <!--    <script src="https://unpkg.com/blockly/blockly.min.js"></script>-->
+    <!--    <script src="https://www.desmos.com/api/v1.7/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>-->
+
+</head>
+<body>
+
+
+<div id="ide" style="width: 100%; height: 600px;"></div>
+<div id="out"></div>
+<pre id="json"></pre>
+
+<script>
+    ///////////////////////////////////
+    RANGE_MIN = 2;
+    RANGE_MAX = 5;
+
+    Blockly.Blocks['foo'] = {
+
+        init: function() {
+
+            var inputsC = RANGE_MIN;
+
+            this.setOutput(true, 'FOO');
+            this.setColour(100);
+            this.setInputsInline(true);
+
+            this.appendValueInput('in1')
+            this.appendValueInput('in2')
+                .appendField('foo')
+        },
+
+        mutationToDom: function () {
+            var container = Blockly.utils.xml.createElement('mutation');
+            container.setAttribute('inputCount', this.inputsC);
+            return container;
+        },
+
+
+        domToMutation: function (xmlElement) {
+            this.inputsC = parseInt(xmlElement.getAttribute('inputCount'), 10) || RANGE_MIN;
+            this.updateShape_();
+        },
+
+        updateShape_: function() {
+            this.removeInput('in1');
+
+            if(this.inputsC === RANGE_MIN){
+                this.appendValueInput('in1')
+                    .appendField(new Blockly.FieldImage(
+                        "https://fonts.gstatic.com/s/i/materialiconsoutlined/add/v4/24px.svg?download=true",
+                        15,
+                        15,
+                        "*", function() {
+                            this.getSourceBlock().plus_();
+                        } ));
+            }
+            else if(this.inputsC === RANGE_MAX){
+                this.appendValueInput('in1')
+                    .appendField(new Blockly.FieldImage(
+                        "https://fonts.gstatic.com/s/i/materialiconsoutlined/remove/v4/24px.svg?download=true",
+                        15,
+                        15,
+                        "*", function() {
+                            this.getSourceBlock().minus_();
+                        } ));
+            }
+            else{
+                this.appendValueInput('in1')
+                    .appendField(new Blockly.FieldImage(
+                        "https://fonts.gstatic.com/s/i/materialiconsoutlined/remove/v4/24px.svg?download=true",
+                        15,
+                        15,
+                        "*", function() {
+                            this.getSourceBlock().minus_();
+                        } ))
+                    .appendField(new Blockly.FieldImage(
+                        "https://fonts.gstatic.com/s/i/materialiconsoutlined/add/v4/24px.svg?download=true",
+                        15,
+                        15,
+                        "*", function() {
+                            this.getSourceBlock().plus_();
+                        } ));
+            }
+
+            var i = 2;
+            while (this.getInput('in' + i)) {
+                this.removeInput('in' + i);
+                i++;
+            }
+
+            for (var x = 2; x <= this.inputsC; x++) {
+                this.appendValueInput('in' + x)
+                    .appendField('foo')
+            }
+        },
+
+
+        plus_: function (){
+            this.inputsC = (this.inputsC + 1);
+            this.updateShape_();
+        },
+
+        minus_: function (){
+            this.inputsC = (this.inputsC - 1);
+            this.updateShape_();
+        }
+    };
+</script>
+<script>
+    Blockly.Blocks['foo2'] = {
+
+        init: function() {
+
+            const inputsC = 3;
+
+            this.setOutput(true, 'FOO');
+            this.setColour(100);
+            // this.setInputsInline(true);
+
+            this.appendValueInput('in1').appendField('bo');
+            this.appendValueInput('in2').appendField('foo');
+
+            this.appendStatementInput('a')
+
+            this.ctx = 0;
+        },
+
+        mutationToDom: function () {
+            console.log( 'mutationToDom', this.inputsC );
+            var container = Blockly.utils.xml.createElement('mutation');
+            container.setAttribute('inputCount', this.inputsC);
+            return container;
+        },
+
+
+        domToMutation: function (xmlElement) {
+            console.log( 'domToMutation', this.inputsC );
+            this.inputsC = parseInt(xmlElement.getAttribute('inputCount'), 10) || 3;
+
+            this.appendValueInput('in1')
+                .appendField(new Blockly.FieldImage(
+                    "https://fonts.gstatic.com/s/i/materialiconsoutlined/add/v4/24px.svg?download=true",
+                    15,
+                    15,
+                    "*", function() {
+                        this.getSourceBlock()._plus();
+                    } ));
+        },
+
+        _updateShape: function() {
+
+        },
+        _plus: function()
+        {
+            console.log( 'plus' );
+            this.appendValueInput('inn'+this.ctx++);
+        }
+
+    };
+</script>
+<script>
+    Blockly.common.defineBlocksWithJsonArray([
+        {
+            "type": "experiment",
+            "message0": "EXPERIMENT %1 Server %2 Collection(s): %3",
+            "args0": [
+                {
+                    "type": "input_dummy",
+                },
+                {
+                    "type": "input_value",
+                    "name": "SERVER",
+                    "check": "server"
+                },
+                {
+                    "type": "input_statement",
+                    "name": "COLLECTIONS",
+                    "check": ["collection"]
+                }
+            ],
+            output: ["server","collection"],
+            "colour": 230,
+            "tooltip": "",
+            "helpUrl": ""
+        },
+        {
+            "type": "server",
+            "message0": "SERVER %1 name: %2 %3 address: %4 %5 method: %6 %7 headers: %8",
+            "args0": [
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_input",
+                    "name": "NAME",
+                    "text": ""
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_input",
+                    "name": "ADDRESS",
+                    "text": ""
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_dropdown",
+                    "name": "METHOD",
+                    "options": [
+                        [
+                            "POST",
+                            "POST"
+                        ],
+                        [
+                            "GET",
+                            "GET"
+                        ]
+                    ]
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_multilinetext",
+                    "name": "HEADERS",
+                    "text": "{}",
+                    spellcheck: false
+                }
+            ],
+            "output": null,
+            "colour": '100',
+            "tooltip": "",
+            "helpUrl": ""
+        },
+        {
+            "type": "collection",
+            "message0": "COLLECTION %1 name: %2 %3 batch: %4 %5 Suite(s): %6",
+            "args0": [
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_input",
+                    "name": "NAME",
+                    "text": ""
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_number",
+                    "name": "BATCH",
+                    "value": 0
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "input_statement",
+                    "name": "SUITES"
+                }
+            ],
+            "previousStatement": null,
+            "nextStatement": null,
+            "colour": 230,
+            "tooltip": "",
+            "helpUrl": ""
+        },
+        {
+            "type": "suite",
+            "message0": "SUITE %1 name %2 %3 batch %4 %5 Case(s): %6",
+            "args0": [
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_input",
+                    "name": "NAME",
+                    "text": ""
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_number",
+                    "name": "BATCH",
+                    "value": 0
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "input_statement",
+                    "name": "CASES"
+                }
+            ],
+            "previousStatement": null,
+            "nextStatement": null,
+            "colour": 230,
+            "tooltip": "",
+            "helpUrl": ""
+        },
+        {
+            "type": "case",
+            "message0": "CASE %1 name %2 %3 batch %4 %5 users %6 %7 requests %8 %9 Body %10 Test(s): %11",
+            "args0": [
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_input",
+                    "name": "NAME",
+                    "text": ""
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_number",
+                    "name": "BATCH",
+                    "value": 0
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_number",
+                    "name": "THREADS",
+                    "value": 1
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_number",
+                    "name": "LOOPS",
+                    "value": 1
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "input_value",
+                    "name": "BODY"
+                },
+                {
+                    "type": "input_statement",
+                    "name": "TESTS"
+                }
+            ],
+            "previousStatement": null,
+            "nextStatement": null,
+            "colour": 230,
+            "tooltip": "",
+            "helpUrl": ""
+        },
+        {
+            "type": "body",
+            "message0": "BODY %1 name %2 %3 json %4",
+            "args0": [
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_input",
+                    "name": "NAME",
+                    "text": "body"
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_multilinetext",
+                    "name": "JSON",
+                    "text": "{}",
+                    spellcheck: false
+                }
+            ],
+            "output": null,
+            "colour": 230,
+            "tooltip": "",
+            "helpUrl": ""
+        },
+        {
+            "type": "test",
+            "message0": "TEST %1 Replace %2 Remove %3",
+            "args0": [
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "input_value",
+                    "name": "REPLACE"
+                },
+                {
+                    "type": "input_value",
+                    "name": "REMOVE"
+                }
+            ],
+            "previousStatement": null,
+            "nextStatement": null,
+            "colour": 230,
+            "tooltip": "",
+            "helpUrl": ""
+        },
+        {
+            "type": "replace",
+            "message0": "REPLACE %1 name %2 %3 json %4",
+            "args0": [
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_input",
+                    "name": "NAME",
+                    "text": "replace"
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_multilinetext",
+                    "name": "JSON",
+                    "text": "{}",
+                    spellcheck: false
+                }
+            ],
+            "output": null,
+            "colour": 230,
+            "tooltip": "",
+            "helpUrl": ""
+        },
+        {
+            "type": "remove",
+            "message0": "REMOVE %1 name %2 %3 json %4",
+            "args0": [
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_input",
+                    "name": "NAME",
+                    "text": "remove"
+                },
+                {
+                    "type": "input_dummy"
+                },
+                {
+                    "type": "field_multilinetext",
+                    "name": "JSON",
+                    "text": "[]",
+                    spellcheck: false
+                }
+            ],
+            "output": null,
+            "colour": 230,
+            "tooltip": "",
+            "helpUrl": ""
+        }
+
+    ]);
+    const workspace = Blockly.inject('ide', {
+       toolbox: {
+           kind: 'flyoutToolbox',
+           contents: [
+               { kind: 'block', type: 'experiment' },
+               { kind: 'block', type: 'server' },
+               { kind: 'block', type: 'collection' },
+               { kind: 'block', type: 'suite' },
+               { kind: 'block', type: 'case' },
+               { kind: 'block', type: 'body' },
+               { kind: 'block', type: 'test' },
+               { kind: 'block', type: 'replace' },
+               { kind: 'block', type: 'remove' },
+               // { kind: 'block', type: 'foo' },
+               // { kind: 'block', type: 'foo2' },
+           ]
+       }
+    });
+    const generator = new Blockly.Generator('QATOOL');
+
+    workspace.addChangeListener( () => {
+        const code = generator.workspaceToCode( workspace );
+        document.getElementById('out').innerHTML = code;
+        try {
+            document.getElementById('json').textContent = JSON.stringify(JSON.parse(code), undefined, 2);
+        }
+        catch ( e )
+        {
+
+        }
+    })
+
+</script>
+<script>
+    let ctx = 0;
+    generator['experiment'] = (block) => {
+        const SERVER = generator.statementToCode( block, 'SERVER' );
+
+        const collectionsArr = [];
+        let collections =  block.getInputTargetBlock('COLLECTIONS');
+        if (collections)
+            do
+            {
+                const collection = generator.blockToCode(collections);
+                collectionsArr.push( collection );
+            }
+            while (collections = collections.getNextBlock());
+
+        return `{ "server": ${SERVER}, "collection": [${collectionsArr.join(',')}] }`;
+    }
+    generator['server'] = ( block ) => {
+        // return [`server`, Blockly.JavaScript.ORDER_NONE];
+        return `{ "name": "${block.getFieldValue('NAME')}", "address": "${block.getFieldValue('ADDRESS')}", "method": "${block.getFieldValue('METHOD')}", "headers": "${block.getFieldValue('HEADERS')}" }`;
+    }
+    generator['collection'] = ( block ) => {
+        const NAME = block.getFieldValue('NAME');
+        const BATCH = block.getFieldValue('BATCH');
+        const suitesArr = [];
+        let suites =  block.getInputTargetBlock('SUITES');
+        if (suites)
+            do
+            {
+                const suite = generator.blockToCode(suites);
+                suitesArr.push( suite );
+            }
+            while (suites = suites.getNextBlock());
+
+        return `{ "name": "${NAME}", "batch": ${BATCH}, "suites": [${suitesArr.join(',')}] }`;
+    }
+    generator['suite'] = function(block) {
+        const NAME = block.getFieldValue('NAME');
+        const BATCH = block.getFieldValue('BATCH');
+        const casesArr = [];
+        let cases =  block.getInputTargetBlock('CASES');
+        if (cases)
+            do
+            {
+                const cAse = generator.blockToCode(cases);
+                casesArr.push( cAse );
+            }
+            while (cases = cases.getNextBlock());
+
+        return `{ "name": "${NAME}", "batch": ${BATCH}, "cases": [${casesArr.join(',')}] }`;
+    };
+    generator['case'] = function(block) {
+        const NAME = block.getFieldValue('NAME');
+        const BATCH = block.getFieldValue('BATCH');
+        const THREADS = block.getFieldValue('THREADS');
+        const LOOPS = block.getFieldValue('LOOPS');
+        const BODY = generator.statementToCode(block, 'BODY') || 'null';
+
+        const testsArr = [];
+        let tests =  block.getInputTargetBlock('TESTS');
+        if (tests)
+            do
+            {
+                const test = generator.blockToCode(tests);
+                testsArr.push( test );
+            }
+            while (tests = tests.getNextBlock());
+
+        return `{ "name": "${NAME}", "batch": ${BATCH}, "threads": ${THREADS}, "loops": ${LOOPS}, "body": ${BODY}, "tests": [${testsArr.join(',')}] }`;
+    };
+    generator['body'] = function(block) {
+        const NAME = block.getFieldValue('NAME');
+        const jSon = block.getFieldValue('JSON');
+
+        let j = '{}';
+        try { j = JSON.stringify(JSON.parse(jSon),0,undefined); } catch (e) {}
+
+        const code = `{ "name": "${NAME}", "json": ${j} }`;
+        return code;
+    };
+    generator['test'] = function(block) {
+        const REPLACE = generator.valueToCode(block, 'REPLACE', Blockly.JavaScript.ORDER_NONE) || 'null';
+        const REMOVE = generator.valueToCode(block, 'REMOVE', Blockly.JavaScript.ORDER_NONE) || 'null';
+
+        return `{ "replace": ${REPLACE}, "remove": ${REMOVE} }`;
+    };
+    generator['replace'] = function(block) {
+        const NAME = block.getFieldValue('NAME');
+        const jSon = block.getFieldValue('JSON');
+
+        let j = '{}';
+        try { j = JSON.stringify(JSON.parse(jSon),0,undefined); } catch (e) {}
+
+        const code = `{ "name": "${NAME}", "json": ${j} }`;
+        return [code, Blockly.JavaScript.ORDER_NONE];
+    };
+    generator['remove'] = function(block) {
+        const NAME = block.getFieldValue('NAME');
+        const jSon = block.getFieldValue('JSON');
+
+        let j = '[]';
+        try { j = JSON.stringify(JSON.parse(jSon),0,undefined); } catch (e) { }
+
+        const code = `{ "name": "${NAME}", "json": ${j} }`;
+        return [code, Blockly.JavaScript.ORDER_NONE];
+    };
+</script>
+
+
+
+<script>
+    function saveWorkspace()
+    {
+        const jsonWorkspace = Blockly.serialization.workspaces.save(workspace);
+        localStorage.setItem("workspace", JSON.stringify(jsonWorkspace));
+    }
+    function restoreFromWorkspace()
+    {
+        const workspaceJSon = localStorage.getItem("workspace");
+        console.log( workspaceJSon );
+        Blockly.serialization.workspaces.load(JSON.parse(workspaceJSon), workspace);
+    }
+</script>
+<button onclick="saveWorkspace();">Save Workspace</button>
+<button onclick="restoreFromWorkspace();">Restore Workspace</button>
+</body>
+</html>
