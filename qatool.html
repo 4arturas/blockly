@@ -469,7 +469,7 @@
 
     ]);
     const workspace = Blockly.inject('ide', {
-       toolbox: {
+        toolbox: {
            kind: 'flyoutToolbox',
            contents: [
                { kind: 'block', type: 'experiment' },
@@ -484,7 +484,15 @@
                // { kind: 'block', type: 'foo' },
                // { kind: 'block', type: 'foo2' },
            ]
-       }
+        },
+        move: {
+            scrollbars: {
+                horizontal: true,
+                vertical: true
+            },
+            drag: true,
+            wheel: false
+        }
     });
     const generator = new Blockly.Generator('QATOOL');
 
