@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Connection checker</title>
+    <script src="scripts/blockly.min.js"></script>
+
+</head>
+<body>
+
+http://bekawestberg.me/projects/blockly-nominal-connection-checker/
+<div id="ide" style="width: 900px; height: 900px;"></div>
+
+
+<script>
+    //
+    Blockly.Blocks['append_crab'] = {
+        init: function() {
+            this.appendDummyInput().appendField('Crab');
+            this.setPreviousStatement(true, 'Crab');
+            this.setNextStatement(true, 'Crab');
+        }
+    };
+    Blockly.Blocks['append_mouse'] = {
+        init: function() {
+            this.appendDummyInput().appendField('Mouse');
+            this.setPreviousStatement(true, 'Mouse');
+            this.setNextStatement(true, 'Mouse');
+        }
+    };
+    Blockly.Blocks['append_rat'] = {
+        init: function() {
+            this.appendDummyInput().appendField('Rat');
+            this.setPreviousStatement(true, 'Rat');
+            this.setNextStatement(true, 'Rat');
+        }
+    };
+
+    Blockly.Blocks['rodent_list'] = {
+        init: function() {
+            this.appendDummyInput().appendField('Rodents');
+            this.appendStatementInput('RODENTS')
+                .setCheck(['Mouse', 'Rat']);
+        }
+    };
+
+
+    Blockly.common.defineBlocksWithJsonArray([
+        {
+            "type": "use_dog",
+            "message0": "Use Dog %1",
+            "args0": [
+                {
+                    "type": "input_value",
+                    "name": "INPUT",
+                    "check": "Dog"
+                }
+            ],
+            "style": "loop_blocks"
+        },
+        {
+            "type": "use_bat",
+            "message0": "Use Bat %1",
+            "args0": [
+                {
+                    "type": "input_value",
+                    "name": "INPUT",
+                    "check": "Bat"
+                }
+            ],
+            "style": "loop_blocks"
+        },
+        {
+            "type": "dog",
+            "message0": "Dog",
+            "output": [
+                "Dog"
+            ],
+            "style": "text_blocks"
+        },
+        {
+            "type": "bat",
+            "message0": "Bat",
+            "output": [
+                "Bat"
+            ],
+            "style": "text_blocks"
+        },
+    ]);
+
+    const workspace = Blockly.inject('ide', {
+        toolbox: {
+            kind: 'flyoutToolbox',
+            contents: [
+                {kind: 'block', type: 'append_crab'},
+                {kind: 'block', type: 'append_mouse'},
+                {kind: 'block', type: 'append_rat'},
+                {kind: 'block', type: 'rodent_list'},
+
+
+                {kind: 'block', type: 'use_dog'},
+                {kind: 'block', type: 'use_bat'},
+                {kind: 'block', type: 'dog'},
+                {kind: 'block', type: 'bat'},
+            ]
+        }
+    });
+
+</script>
+<button onclick="saveWorkspace();">Save Workspace</button>
+<button onclick="restoreFromWorkspace();">Restore Workspace</button>
+</body>
+</html>
