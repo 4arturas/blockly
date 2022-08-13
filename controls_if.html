@@ -24,7 +24,7 @@
         const code = generator.workspaceToCode( workspace );
         document.getElementById('out').innerHTML = code;
     });
-
+/*
     generator['controls_if'] = ( block ) => {
         let n = 0;
         let code = '', branchCode, conditionCode;
@@ -45,6 +45,27 @@
             code += ` else {\n${branchCode}}`;
         }
         return code + '\n'
+    }
+*/
+
+    generator['controls_if'] = ( block ) =>
+    {
+        let code = '';
+        for ( let i = 0; ;i++ )
+        {
+            const _if = block.getInput(`IF${i}`);
+            if ( !_if ) break;
+            const conditionCode = generator.valueToCode(block, `IF${i}`, Blockly.JavaScript.ORDER_NONE) || 'false';
+            const branchCode = generator.statementToCode( block, `DO${i}` );
+            code += (i > 0) ? ' else ' : '';
+            code += `if (${conditionCode}) {\n${branchCode}}`;
+        }
+        if ( block.getInput('ELSE') )
+        {
+            const branchCode = generator.statementToCode( block, 'ELSE' );
+            code += ` else {${branchCode}}`;
+        }
+        return code + '\n';
     }
 
 </script>
