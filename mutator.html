@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learn</title>
+    <script src="scripts/blockly.min.js"></script>
+</head>
+<body>
+
+<div id="out"></div>
+<div id="ide" style="width: 900px; height: 900px;"></div>
+<script>
+    Blockly.Blocks['mutator_variable_test'] = {
+        init: function () {
+            this.itemCount_ = 2;
+            this.appendDummyInput().appendField('mutator test block');
+            this.updateShape_();
+            this.setMutator(new Blockly.Mutator(['mutator_variable_test_item']));
+        },
+        mutationToDom: function () {
+            var container = Blockly.utils.xml.createElement('mutation');
+            container.setAttribute('items', this.itemCount_);
+            return container;
+        },
+        domToMutation: function (xmlElement) {
+            this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
+            this.updateShape_();
+        },
+        decompose: function (workspace) {
+            var containerBlock = workspace.newBlock('mutator_variable_test_container');
+            containerBlock.initSvg();
+            var connection = containerBlock.getInput('STACK').connection;
+            for (var i = 0; i < this.itemCount_; i++) {
+                var itemBlock = workspace.newBlock('mutator_variable_test_item');
+                itemBlock.initSvg();
+                connection.connect(itemBlock.previousConnection);
+                connection = itemBlock.nextConnection;
+            }
+            return containerBlock;
+        },
+        compose: function (containerBlock) {
+            var itemBlock = containerBlock.getInputTargetBlock('STACK');
+            // Count number of inputs.
+            var connections = [];
+            while (itemBlock) {
+                connections.push(itemBlock.valueConnection_);
+                itemBlock = itemBlock.nextConnection &&
+                    itemBlock.nextConnection.targetBlock();
+            }
+            this.itemCount_ = connections.length;
+            this.updateShape_();
+        },
+        updateShape_: function () {
+            // Add new inputs.
+            for (var i = 0; i < this.itemCount_; i++) {
+                if (!this.getInput('ADD' + i)) {
+                    this.appendValueInput('ADD' + i)
+                        .appendField('variable')
+                        .appendField(new Blockly.FieldVariable('item'), 'VAR' + i)  // <-- THIS IS THE SOURCE OF THE BUG WHEN FOLLOWED BY ANOTHER FIELD.
+                        .appendField('that stores stuff');
+                }
+            }
+            // Remove deleted inputs.
+            while (this.getInput('ADD' + i)) {
+                this.removeInput('ADD' + i);
+                i++;
+            }
+        }
+    };
+
+    Blockly.Blocks['mutator_variable_test_container'] = {
+        init: function () {
+            this.appendDummyInput().appendField('add things');
+            this.appendStatementInput('STACK');
+        }
+    };
+
+    Blockly.Blocks['mutator_variable_test_item'] = {
+        init: function () {
+            this.appendDummyInput().appendField('thing');
+            this.setPreviousStatement(true);
+            this.setNextStatement(true);
+        }
+    };
+</script>
+<script>
+    const workspace = Blockly.inject( 'ide', {
+       toolbox: {
+           kind: 'flyoutToolbox',
+           contents: [
+               { kind: 'block', type: 'mutator_variable_test' },
+               { kind: 'block', type: 'mutator_variable_test_container' },
+               // { kind: 'block', type: 'mutator_variable_test_item' },
+           ]
+       }
+    });
+</script>
+<script>
+
+</script>
+
+<button onclick="saveWorkspace();">Save Workspace</button>
+<button onclick="restoreFromWorkspace();">Restore Workspace</button>
+</body>
+</html>
